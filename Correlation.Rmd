@@ -1,0 +1,93 @@
+---
+title: "Correlation"
+author: "CT"
+date: "March 13, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Loading libraries and data
+
+```{r read, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(ggthemes)
+library(dplyr)
+library(ggcorrplot)
+```
+### Reading data
+
+```{r cars}
+
+# Listing the data structure
+str(mtcars)
+
+# First rows
+head(mtcars)
+
+# Data summary
+summary(mtcars)
+
+```
+### Plotting Correlation
+
+```{r plotcorrelation, echo=FALSE}
+
+# Correlation matrix
+corr <- round(cor(mtcars), 1)
+
+ggcorrplot(corr, hc.order = TRUE, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 3, 
+           method="circle",
+           colors = c("tomato2", "white", "springgreen3"), 
+           title="Correlation of mtcars", 
+           ggtheme=theme_bw)
+```
+
+### Investigating mpg and hp relation
+
+```{r plotting}
+# Limiting the dataset to two columns
+mymtcars <- mtcars %>%
+  select(mpg, hp)
+
+# Assumptions before calculating correlation
+# 1st - The relation between the variables is linear
+# 2nd - The data follow a normal distribution
+
+gg <- ggplot(mymtcars, aes(mpg)) + 
+  geom_density(kernel = "gaussian") +
+  labs(subtitle="Miles/(US) gallon")
+plot(gg)
+
+gg <- ggplot(mymtcars, aes(hp)) + 
+  geom_density(kernel = "gaussian") +
+  labs(subtitle="Gross horsepower")
+plot(gg)
+
+gg <- ggplot(mymtcars, aes(x=mpg, y=hp)) + 
+  geom_point() + 
+  geom_smooth(method="lm", se=F) + 
+  labs(subtitle="Miles/(US) gallon Vs Gross horsepower", 
+       y="mpg", 
+       x="hp", 
+       title="Scatterplot", 
+       caption = "Source: mtcars")
+plot(gg)
+```
+
+### Correlation test
+
+```{r correlation}
+
+# cor.test() test for association/correlation between paired samples. It returns both the correlation coefficient and the significance level(or p-value) of the correlation.
+
+print(cor.test(mymtcars$mpg,mymtcars$hp))
+
+```
+###### Based on the correlation test, we reject the null hypothesis that true correlation is equal to zero.
+
