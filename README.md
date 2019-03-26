@@ -1,2 +1,2 @@
 # correlation
-Correlation
+Correlation study
